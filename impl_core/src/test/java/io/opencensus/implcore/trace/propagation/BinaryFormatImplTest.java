@@ -175,4 +175,17 @@ public class BinaryFormatImplTest {
           101, 102, 103, 104, 2
         });
   }
+
+  @Test
+  public void fromBinaryValue_MissingTraceOptionsOk() throws SpanContextParseException {
+    SpanContext extracted =
+        binaryFormat.fromByteArray(
+            new byte[] {
+              0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 97, 98, 99,
+              100, 101, 102, 103, 104
+            });
+
+    assertThat(extracted.isValid()).isTrue();
+    assertThat(extracted.getTraceOptions()).isEqualTo(TraceOptions.DEFAULT);
+  }
 }

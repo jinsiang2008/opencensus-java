@@ -126,13 +126,15 @@ final class BinaryFormatImpl extends BinaryFormat {
       throw new SpanContextParseException("Invalid input: expected span ID at offset " + pos);
     }
     // The trace options field is optional. However, when present, it should be valid.
-    if (bytes.length > pos && bytes[pos] == TRACE_OPTION_FIELD_ID) {
+    if (bytes.length > pos) {
+      if (bytes[pos] != TRACE_OPTION_FIELD_ID) {
+        throw new SpanContextParseException(
+            "Invalid input: expected trace options at offset " + pos);
+      }
       if (bytes.length < pos + ID_SIZE + TraceOptions.SIZE) {
         throw new SpanContextParseException("Invalid input: truncated");
       }
       traceOptions = TraceOptions.fromBytes(bytes, pos + ID_SIZE);
-    } else {
-      throw new SpanContextParseException("Invalid input: expected trace options at offset " + pos);
     }
     return SpanContext.create(traceId, spanId, traceOptions);
   }
